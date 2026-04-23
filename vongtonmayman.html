@@ -1,0 +1,87 @@
+!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<title>Vòng quay may mắn</title>
+<style>
+body {
+  font-family: Arial;
+  text-align: center;
+  background: #111;
+  color: white;
+}
+#wheel {
+  margin: 30px auto;
+  border-radius: 50%;
+  border: 10px solid #fff;
+}
+button {
+  padding: 10px 20px;
+  font-size: 18px;
+  cursor: pointer;
+}
+</style>
+</head>
+
+<body>
+
+<h2>🎯 Vòng quay may mắn</h2>
+
+<canvas id="wheel" width="400" height="400"></canvas><br>
+<button onclick="spin()">QUAY</button>
+
+<script>
+const names = ["A", "B", "C", "D", "E", "F"];
+const canvas = document.getElementById("wheel");
+const ctx = canvas.getContext("2d");
+
+const arc = 2 * Math.PI / names.length;
+let startAngle = 0;
+
+function drawWheel() {
+  for (let i = 0; i < names.length; i++) {
+    let angle = startAngle + i * arc;
+    ctx.fillStyle = `hsl(${i * 360 / names.length}, 70%, 50%)`;
+    ctx.beginPath();
+    ctx.moveTo(200,200);
+    ctx.arc(200,200,200,angle,angle+arc);
+    ctx.fill();
+
+    ctx.save();
+    ctx.translate(200,200);
+    ctx.rotate(angle + arc/2);
+    ctx.fillStyle = "#fff";
+    ctx.fillText(names[i], 80, 0);
+    ctx.restore();
+  }
+}
+
+function spin() {
+  let spinAngle = Math.random() * 2000 + 2000;
+  let duration = 3000;
+  let start = null;
+
+  function animate(timestamp) {
+    if (!start) start = timestamp;
+    let progress = timestamp - start;
+
+    startAngle = spinAngle * progress / duration;
+    ctx.clearRect(0,0,400,400);
+    drawWheel();
+
+    if (progress < duration) {
+      requestAnimationFrame(animate);
+    } else {
+      let index = Math.floor(names.length - (startAngle / arc) % names.length) % names.length;
+      alert("🎉 Kết quả: " + names[index]);
+    }
+  }
+
+  requestAnimationFrame(animate);
+}
+
+drawWheel();
+</script>
+
+</body>
+</html>
